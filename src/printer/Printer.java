@@ -8,15 +8,13 @@ import lejos.nxt.SensorPort;
 import lejos.nxt.Sound;
 import lejos.nxt.TouchSensor;
 
+
 /**
  * @author @author czubehead <a href="petrcech.eu">website</a>
  * @version 1.1
  * @since 24.8.2015
- * <p>
- * motors configuration:
- * X axis (horizontal)=B
- * Y axis (vertical)=A
- * head=C
+ *        <p>
+ *        motors configuration: X axis (horizontal)=B Y axis (vertical)=A head=C
  */
 public class Printer
 {
@@ -89,6 +87,7 @@ public class Printer
 		if (Button.waitForAnyPress() != Button.ID_ENTER) // confirm image by
 															// enter
 		{
+			LCD.clear();
 			System.out.println("canceled");
 			sleeep(1500);
 			return;
@@ -127,6 +126,12 @@ public class Printer
 	 */
 	public static void PrintImage()
 	{
+		image = flipImage(image);// flip the image upside down, because if we
+									// didn't do it, it would be a mirror of
+									// original. This will also cause that the
+									// image will be printed like the user
+									// expects
+
 		Motor.A.setSpeed(motors_speed);
 		Motor.B.setSpeed(motors_speed);
 		Motor.C.setSpeed(motors_speed);
@@ -240,7 +245,7 @@ public class Printer
 							// speed
 						}
 
-						Motor.B.setSpeed(100);//slow down to maximize precision
+						Motor.B.setSpeed(100);// slow down to maximize precision
 						Motor.B.backward();
 						while (!touchSensor.isPressed());
 						Motor.B.stop();
@@ -258,7 +263,9 @@ public class Printer
 
 	/**
 	 * utility to make the thread sleep
-	 * @param ms how long in ms
+	 * 
+	 * @param ms
+	 *            how long in ms
 	 */
 	private static void sleeep(int ms)
 	{
@@ -269,6 +276,19 @@ public class Printer
 		{
 			e1.printStackTrace();
 		}
+	}
+
+	private static boolean[][] flipImage(boolean[][] input)
+	{
+		boolean[][] out = new boolean[img_widht][img_height];
+		for (int i = 0; i < img_height; i++)
+		{
+			for (int x = 0; x < img_widht; x++)
+			{
+				out[x][img_height - i - 1] = input[x][i];
+			}
+		}
+		return out;
 	}
 
 	/**
